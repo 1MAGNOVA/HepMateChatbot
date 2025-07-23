@@ -59,7 +59,7 @@ def hepmate():
 # Web interface: HTML chat page
 @app.route('/')
 def webchat():
-    return render_template('index.html')
+    return render_template('/index.html')
 
 
 # Web interface: chat API for AJAX
