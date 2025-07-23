@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HepMate Prototype AI ChatBot</title>
+</head>
+<body>
+    <button id="HepMate Chat" onclick="toggleChat()"> HepMate💬</button>
+
+    <div id="chatSpace">
+                <div id="chatContainer" onclick="toggleChat">HepMate ChatBot (Click to Close)</div>
+                <div id="chatbox"></div>
+                <div id="chatInputContainer"></div>
+                        <input type="text" id="UserMessage" placeholder="Please ask your question">
+                        <button id="sendButton" onclick="sendMessage()">Send</button>
+
+    </div>
+
+
+
+    <script>
+        function toggleChat(){
+            let chatContainer = document.getElementById("chatContainer");
+
+            chatContainer.style.display = (chatContainer.style.display == "none" || chatContainer.style.display=="") ? "block" : "none"
+
+        }
+        function sendMessage(){
+            let UserMessage = document.getElementById("userMessage").value;
+
+            if (!UserMessage.trim())return;
+            document.getElementById("chatSpace").innerHTML += "<p> you:" + User_Message + "</p>"
+        
+            document.getElementById("chatSpace").value = "";
+        
+            fetch( "get_response", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message: User_Message})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("chatSpace").innerHTML += "<p> HepMate:" + data.response + "</p>";
+                     document.getElementById("chatSpace").scrollTop =  document.getElementById("chatSpace").scrollHeight;
+                });
+        }
+
+
+
+
+    </script>
+</body>
+</html>
