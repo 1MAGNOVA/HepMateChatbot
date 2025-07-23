@@ -1,54 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HepMate Prototype AI ChatBot</title>
+  <meta charset="UTF-8">
+  <title>Hepmate Web Chat</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2950/2950651.png" type="image/png">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chatbox {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .chatbox h3 {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .chatbox h3 img {
+      width: 30px;
+      margin-right: 10px;
+    }
+
+    .messages {
+      height: 350px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      padding-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+
+    .message {
+      padding: 10px 15px;
+      margin: 8px 0;
+      border-radius: 8px;
+      max-width: 75%;
+      clear: both;
+    }
+
+    .user {
+      background: #d0ebff;
+      align-self: flex-end;
+      margin-left: auto;
+      text-align: right;
+      color: #0056b3;
+    }
+
+    .bot {
+      background: #d4edda;
+      align-self: flex-start;
+      margin-right: auto;
+      text-align: left;
+      color: #256029;
+    }
+
+    input[type="text"] {
+      width: 75%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0b5ed7;
+    }
+  </style>
 </head>
 <body>
-    <button id="HepMate Chat" onclick="toggleChat()"> HepMate💬</button>
+  <div class="chatbox">
+    <h3><img src="https://cdn-icons-png.flaticon.com/512/2950/2950651.png" alt="Chat Icon"> Hepmate Assistant</h3>
+    <div class="messages" id="messages"></div>
+    <input type="text" id="msg" placeholder="Type your message..." />
+    <button onclick="send()">Send</button>
+  </div>
 
-    <div id="chatSpace">
-                <div id="chatContainer" onclick="toggleChat">HepMate ChatBot (Click to Close)</div>
-                <div id="chatbox"></div>
-                <div id="chatInputContainer"></div>
-                        <input type="text" id="UserMessage" placeholder="Please ask your question">
-                        <button id="sendButton" onclick="sendMessage()">Send</button>
+  <script>
+    async function send() {
+      const inputBox = document.getElementById("msg");
+      const userText = inputBox.value.trim();
+      if (!userText) return;
 
-    </div>
+      addMessage(userText, 'user');
+      inputBox.value = '';
 
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+      });
 
+      const data = await response.json();
+      addMessage(data.response, 'bot');
+    }
 
-    <script>
-        function toggleChat(){
-            let chatContainer = document.getElementById("chatContainer");
-
-            chatContainer.style.display = (chatContainer.style.display == "none" || chatContainer.style.display=="") ? "block" : "none"
-
-        }
-        function sendMessage(){
-            let UserMessage = document.getElementById("userMessage").value;
-
-            if (!UserMessage.trim())return;
-            document.getElementById("chatSpace").innerHTML += "<p> you:" + User_Message + "</p>"
-        
-            document.getElementById("chatSpace").value = "";
-        
-            fetch( "get_response", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({message: User_Message})
-            })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("chatSpace").innerHTML += "<p> HepMate:" + data.response + "</p>";
-                     document.getElementById("chatSpace").scrollTop =  document.getElementById("chatSpace").scrollHeight;
-                });
-        }
-
-
-
-
-    </script>
+    function addMessage(text, sender) {
+      const msgElem = document.createElement('div');
+      msgElem.className = 'message ' + sender;
+      msgElem.textContent = text;
+      document.getElementById('messages').appendChild(msgElem);
+      msgElem.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 </body>
 </html>
